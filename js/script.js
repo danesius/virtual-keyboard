@@ -568,10 +568,125 @@ class MainKeyboard {
       document.dispatchEvent(eventKeyUp);
     });
   }
+  arrowUp() {
+    this.textarea.selectionStart = 0;
+    this.textarea.selectionEnd = this.textarea.selectionStart;
+  }
 
+  arrowDown() {
+    this.textarea.selectionEnd = this.textarea.textLength;
+    this.textarea.selectionStart = this.textarea.selectionEnd;
+  }
+
+  arrowLeft() {
+    this.textarea.selectionStart = Math.max(0, this.textarea.selectionStart - 1);
+    this.textarea.selectionEnd = this.textarea.selectionStart;
+  }
+
+  arrowRight() {
+    this.textarea.selectionStart = Math.min(
+      this.textarea.textLength,
+      this.text.selectionEnd + 1,
+    );
+    this.textarea.selectionEnd = this.textarea.selectionStart;
+  }
+
+  insertText(chars) {
+    const cursorAt = this.textarea.selectionStart;
+
+    this.textarea.value =
+      this.textarea.value.slice(0, cursorAt) +
+      chars +
+      this.textarea.value.slice(this.textarea.selectionEnd);
+
+    this.textarea.selectionStart = cursorAt + chars.length;
+    this.textarea.selectionEnd = this.textarea.selectionStart;
+  }
+
+  pressBackspace() {
+    if (this.textarea.selectionStart !== this.textarea.selectionEnd) {
+      this.insertText('');
+    } else {
+      const cursorAt = Math.max(0, this.textarea.selectionStart - 1);
+
+      this.textarea.value =
+        this.textarea.value.slice(0, cursorAt) +
+        this.textarea.value.slice(this.textarea.selectionEnd);
+
+      this.textarea.selectionStart = cursorAt;
+      this.textarea.selectionEnd = this.textarea.selectionStart;
+    }
+  }
+
+  pressDelete() {
+    if (this.textarea.selectionStart !== this.textarea.selectionEnd) {
+      this.insertText('');
+    } else {
+      const cursorAt = this.textarea.selectionStart;
+
+      this.textarea.value =
+        this.textarea.value.slice(0, cursorAt) +
+        this.textarea.value.slice(cursorAt + 1);
+
+      this.textarea.selectionStart = cursorAt;
+      this.textarea.selectionEnd = this.textarea.selectionStart;
+    }
+  }
+
+  showLanguage(lang, shift = false) {
+    Array.from(this.keyboard.querySelectorAll('.keyboard__key')).forEach(
+      (event) => {
+        event.textContent = keyboardKeys[event.id][lang];
+      },
+    );
+
+    this.switchCaps(shift);
+  }
+
+  switchCaps(shiftKey) {
+    const showUpperCase = (this.caps && !shiftKey) || (!this.caps && shiftKey);
+    const toCase = showUpperCase ? 'toUpperCase' : 'toLowerCase';
+    Array.from(this.keyboard.querySelectorAll('.keyboard__key')).forEach(
+      (event) => {
+        if (!keyboardKeys[event.id].func) {
+          if (event.id === 'Backquote' && this.lang === 'en') {
+            event.textContent = shiftKey ? '~' : '`';
+          } else if (event.id === 'Minus' && this.lang === 'en') {
+            event.textContent = shiftKey ? '_' : '-';
+          } else if (event.id === 'Equal' && this.lang === 'en') {
+            event.textContent = shiftKey ? '+' : '=';
+          } else if (event.id === 'BracketLeft' && this.lang === 'en') {
+            event.textContent = shiftKey ? '{' : '[';
+          } else if (event.id === 'BracketRight' && this.lang === 'en') {
+            event.textContent = shiftKey ? '}' : ']';
+          } else if (event.id === 'Backslash' && this.lang === 'en') {
+            event.textContent = shiftKey ? '|' : '\\';
+          } else if (event.id === 'Semicolon' && this.lang === 'en') {
+            event.textContent = shiftKey ? ':' : ';';
+          } else if (event.id === 'Quote' && this.lang === 'en') {
+            event.textContent = shiftKey ? '"' : "'";
+          } else if (event.id === 'Comma' && this.lang === 'en') {
+            event.textContent = shiftKey ? '<' : ',';
+          } else if (event.id === 'Period' && this.lang === 'en') {
+            event.textContent = shiftKey ? '>' : '.';
+          } else if (event.id === 'Slash' && this.lang === 'en') {
+            event.textContent = shiftKey ? '?' : '/';
+          } else if (event.id === 'Slash' && this.lang === 'ru') {
+            event.textContent = shiftKey ? ',' : '.';
+          } else {
+            event.textContent = event.textContent[toCase]();
+          }
+        }
+      },
+    );
+  }
 
 
 
 }
+window.addEventListener('DOMContentLoaded', () => {
+  const keyboard = new MainKeyboard();
+  keyboard.init();
+});
 
 
