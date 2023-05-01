@@ -467,6 +467,111 @@ class MainKeyboard {
     this.createListeners();
   }
 
+
+  createListeners() {
+    this.textarea.addEventListener('blur', () => {
+      setTimeout(() => {
+        this.textarea.focus();
+      }, 0);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      event.stopImmediatePropagation();
+
+      const key = document.getElementById(event.code);
+      if (!key) {
+        event.preventDefault();
+        return;
+      }
+
+      if (event.code === 'CapsLock' && !event.repeat) {
+        event.preventDefault();
+        this.caps = !this.caps;
+
+        const addRemove = this.caps ? 'add' : 'remove';
+        key.classList[addRemove]('active');
+
+        this.switchCaps(event.shiftKey);
+      } else {
+        key.classList.add('active');
+
+        if ((event.ctrlKey || event.metaKey) && event.altKey && !event.repeat) {
+          event.preventDefault();
+          this.lang = this.lang === 'ru' ? 'en' : 'ru';
+          localStorage.setItem('lang', this.lang);
+          this.showLanguage(this.lang, event.shiftKey);
+        } else if (!keyboardKeys[event.code].func) {
+          event.preventDefault();
+          this.insertText(key.textContent);
+        } else if (event.key === 'Shift' && !event.repeat) {
+          event.preventDefault();
+          this.switchCaps(event.shiftKey);
+        } else if (event.code === 'Tab') {
+          event.preventDefault();
+          this.insertText('\t');
+        } else if (event.code === 'Enter') {
+          event.preventDefault();
+          this.insertText('\n');
+        } else if (event.code === 'Backspace') {
+          event.preventDefault();
+          this.pressBackspace();
+        } else if (event.code === 'Delete') {
+          event.preventDefault();
+          this.pressDelete();
+        } else if (event.code === 'ArrowUp' && !event.isTrusted) {
+          this.arrowUp();
+        } else if (event.code === 'ArrowDown' && !event.isTrusted) {
+          this.arrowDown();
+        } else if (event.code === 'ArrowLeft' && !event.isTrusted) {
+          this.arrowLeft();
+        } else if (event.code === 'ArrowRight' && !event.isTrusted) {
+          this.arrowRight();
+        }
+      }
+    });
+
+    document.addEventListener('keyup', (event) => {
+      event.stopImmediatePropagation();
+
+      const key = document.getElementById(event.code);
+      if (!key) {
+        event.preventDefault();
+        return;
+      }
+
+      if (event.code !== 'CapsLock') {
+        key.classList.remove('active');
+        if (event.key === 'Shift') {
+          event.preventDefault();
+          this.switchCaps(event.shiftKey);
+        }
+      }
+    });
+
+    this.keyboard.addEventListener('click', (event) => {
+      this.textarea.focus();
+      const eventKeyDown = new KeyboardEvent('keydown', {
+        bubbles: true,
+        cancelable: true,
+        code: event.target.id,
+        view: window,
+      });
+      document.dispatchEvent(eventKeyDown);
+
+      this.textarea.focus();
+      const eventKeyUp = new KeyboardEvent('keyup', {
+        bubbles: true,
+        cancelable: true,
+        code: event.target.id,
+        view: window,
+      });
+      document.dispatchEvent(eventKeyUp);
+    });
+  }
+
+
+
+
 }
 
 
