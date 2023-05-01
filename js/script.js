@@ -389,3 +389,29 @@ const keyboardLayout = [
     },
   ],
 ];
+
+
+
+const keyboardKeys = {};
+const keyboardFragment = document.createDocumentFragment();
+
+keyboardLayout.forEach((line) => {
+  const keyboardRow = document.createElement('div');
+  keyboardRow.classList.add('keyboard__row');
+
+  line.forEach((key) => {
+    keyboardKeys[key.code] = key.lang;
+    keyboardKeys[key.code].func = key.func;
+
+    const keyElement = document.createElement('button');
+    keyElement.setAttribute('id', key.code);
+    keyElement.setAttribute('type', 'button');
+    keyElement.classList.add('keyboard__key');
+    keyElement.classList.add(`keyboard__key_${key.width}`);
+
+    keyElement.textContent = key.lang.en;
+    keyboardRow.appendChild(keyElement);
+  });
+
+  keyboardFragment.appendChild(keyboardRow);
+});
