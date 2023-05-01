@@ -415,3 +415,58 @@ keyboardLayout.forEach((line) => {
 
   keyboardFragment.appendChild(keyboardRow);
 });
+
+
+
+
+
+class MainKeyboard {
+  constructor() {
+    this.caps = false;
+    this.lang = localStorage.getItem('lang') === 'ru' ? 'ru' : 'en';
+  }
+  init() {
+    // Create main elements
+    this.wrapper = document.createElement('main');
+    this.title = document.createElement('h1');
+    this.textarea = document.createElement('textarea');
+    this.keyboard = document.createElement('div');
+    const keyboardRow = document.createElement('div');
+    this.language = document.createElement('p');
+
+    // Setup main elements
+    this.wrapper.classList.add('wrapper');
+
+    this.title.classList.add('title');
+    this.title.textContent = 'RSS Virtual keyboard';
+
+    this.textarea.autofocus = true;
+    this.textarea.classList.add('textarea');
+
+    this.keyboard.classList.add('keyboard');
+    keyboardRow.classList.add('keyboard__row');
+
+
+
+    this.language.classList.add('info');
+    this.language.textContent =
+      'ENG/РУС Ctrl+Alt ';
+
+    // Add to DOM
+    this.keyboard.appendChild(keyboardFragment);
+    this.showLanguage(this.lang);
+
+    this.wrapper.appendChild(this.title);
+    this.wrapper.appendChild(this.textarea);
+    this.wrapper.appendChild(this.keyboard);
+
+    this.wrapper.appendChild(this.language);
+
+    document.body.appendChild(this.wrapper);
+
+    this.createListeners();
+  }
+
+}
+
+
